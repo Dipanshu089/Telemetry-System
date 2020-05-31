@@ -1,39 +1,34 @@
+//BMP180- Pressure,Temperature and Estimated altitude
+
 // Import required libraries
 #include "WiFi.h"
 #include "ESPAsyncWebServer.h"
 
+//for using BMP180 we need to include library containing its classes and functions
 #include <Wire.h>
-#include <Adafruit_Sensor.h>
-#include <Adafruit_BME280.h>
+#include <Adafruit_BMP085.h>
 
 // Set your access point network credentials
-const char* ssid = "ESP32-Access-Point";
-const char* password = "123456789";
+const char* ssid = "Client SSID";
+const char* password = "applepie";
 
-/*#include <SPI.h>
-#define BME_SCK 18
-#define BME_MISO 19
-#define BME_MOSI 23
-#define BME_CS 5*/
-
-Adafruit_BME280 bme; // I2C
-//Adafruit_BME280 bme(BME_CS); // hardware SPI
-//Adafruit_BME280 bme(BME_CS, BME_MOSI, BME_MISO, BME_SCK); // software SPI
+Adafruit_BMP085 bmp;//creating class object
 
 // Create AsyncWebServer object on port 80
 AsyncWebServer server(80);
 
 String readTemp() {
-  return String(bme.readTemperature());
-  //return String(1.8 * bme.readTemperature() + 32);
+  return String(bmp.readTemperature());
+  //return String(1.8 * bmp.readTemperature() + 32);for temperature in 
 }
-
-String readHumi() {
-  return String(bme.readHumidity());
-}
-
 String readPres() {
-  return String(bme.readPressure() / 100.0F);
+  return String(bmp.readPressure() / 100.0F);
+}
+String readSealevelPres() {
+  return String(bmp.readSealevelPressure());
+}
+String readAlt() {
+  return String(bmp.readAltitude());
 }
 
 void setup(){
@@ -53,20 +48,20 @@ void setup(){
   server.on("/temperature", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send_P(200, "text/plain", readTemp().c_str());
   });
-  server.on("/humidity", HTTP_GET, [](AsyncWebServerRequest *request){
-    request->send_P(200, "text/plain", readHumi().c_str());
+  server.on("/altitude", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send_P(200, "text/plain", readAlt().c_str());
   });
   server.on("/pressure", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send_P(200, "text/plain", readPres().c_str());
   });
+    server.on("/sealevelpressure", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send_P(200, "text/plain", readSealevelPres().c_str());
+  });
   
   bool status;
-
-  // default settings
-  // (you can also pass in a Wire library object like &Wire2)
-  status = bme.begin(0x76);  
+  status = bmp.begin(0x76);  
   if (!status) {
-    Serial.println("Could not find a valid BME280 sensor, check wiring!");
+    Serial.println("Could not find a valid BMP180 sensor, check wiring!");
     while (1);
   }
   
