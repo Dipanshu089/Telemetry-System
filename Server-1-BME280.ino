@@ -1,10 +1,10 @@
 // Import required libraries
 #include "WiFi.h"
 #include "ESPAsyncWebServer.h"
-
+//BME
 #include <Wire.h>
 #include <Adafruit_Sensor.h>
-#include <Adafruit_BME280.h>
+#include <Adafruit_BME180.h>
 
 // Set your access point network credentials
 const char* ssid = "ESP32-Access-Point";
