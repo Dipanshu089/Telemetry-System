@@ -1,4 +1,4 @@
-//arduino-sketch on Client-1
+//sketch on Client
 #include <WiFi.h>
 #include <HTTPClient.h>
 
